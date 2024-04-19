@@ -9,4 +9,5 @@ import lombok.Data;
 public class AuthRequestDto {
     private String username;
     private String password;
+    private String x_token;
 }

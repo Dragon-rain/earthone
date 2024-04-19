@@ -1,12 +1,10 @@
 package com.earthone.earthone.security;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import com.earthone.earthone.entity.UserEntity;
 import com.earthone.earthone.exception.AuthException;
-import com.earthone.earthone.service.AuthenticationService;
 import com.earthone.earthone.service.UserService;
 
 import java.util.Base64;
@@ -26,7 +24,6 @@ import reactor.core.publisher.Mono;
 public class SecurityService {
 
     private final UserService userService;
-    //private final AuthenticationService authenticationService;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${jwt.secret}")
@@ -37,7 +34,7 @@ public class SecurityService {
     private String issuer;
 
 
-    private TokenDetails generateToken(UserEntity user) {
+    public TokenDetails generateToken(UserEntity user) {
         Map<String, Object> claims = new HashMap<>() {{
             put("role", user.getRole());
             put("userId", user.getId());
@@ -50,17 +47,20 @@ public class SecurityService {
         //Long expirationTimeInMillis = expirationInSeconds * 1000L;
         Long expirationTimeInMillis = Long.valueOf(expirationInSeconds);
         Date expirationDate = new Date(new Date().getTime() + expirationTimeInMillis);
+        Date xExpirationDate = new Date(new Date().getTime() + expirationTimeInMillis*100L);
 
-        return generateToken(expirationDate, claims, subject);
+        return generateToken(expirationDate, xExpirationDate, claims, subject);
     }
 
-    private TokenDetails generateToken(Date expirationDate, Map<String, Object> claims, String subject) {
+    private TokenDetails generateToken(Date expirationDate, Date xExpirationDate, Map<String, Object> claims, String subject) {
         Date createdDate = new Date();
         return TokenDetails.builder()
+                .userId(Long.valueOf(subject))
                 .token(getToken(expirationDate, claims, subject, createdDate))
-                .xToken(getToken(new Date(expirationDate.getTime()*100L), claims, subject, createdDate))
+                .xToken(getToken(xExpirationDate, claims, subject, createdDate))
                 .issuedAt(createdDate)
                 .expiresAt(expirationDate)
+                .xTokenExpiresAt(xExpirationDate)
                 .build();
     }
 
@@ -86,33 +86,12 @@ public class SecurityService {
                     if (!passwordEncoder.matches(password, user.getPassword())) {
                         return Mono.error(new AuthException("Invalid password", "EARTHONE_INVALID_PASSWORD"));
                     }
-
-                    TokenDetails authData = generateToken(user).toBuilder()
-                        .userId(user.getId())
-                        .build();
-                    
-                    //authenticationService.saveAuthData(authData, request);
-
-                    return Mono.just(authData);
+                    return Mono.just(generateToken(user).toBuilder()
+                                .userId(user.getId())
+                                .build());
                 })
+                .flatMap(tokenData -> userService.saveAuthData(tokenData, request))
                 .switchIfEmpty(Mono.error(new AuthException("Invalid username", "EARTHONE_INVALID_USERNAME")));
     }
-
-    // public boolean checkXToken(String xToken, TokenDetails newTokenData) {
-    //     Claims claims = Jwts.parser()
-    //             .setSigningKey(Base64.getEncoder().encodeToString(secret.getBytes()))
-    //             .parseClaimsJws(xToken)
-    //             .getBody();
-
-    //     final Date expirationDate = claims.getExpiration();
-
-    //     if (expirationDate.before(new Date())) {
-    //         return false;
-    //     }
-
-    //     newTokenData = generateToken(userService.getUserById(Long.parseLong(claims.get("userId").toString())).block());
-        
-    //     return true;
-    // }
 
 }

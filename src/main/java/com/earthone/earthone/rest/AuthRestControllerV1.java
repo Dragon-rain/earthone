@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import com.earthone.earthone.dto.AuthRequestDto;
 import com.earthone.earthone.dto.AuthResponseDto;
 import com.earthone.earthone.dto.UserDto;
-//import com.earthone.earthone.entity.AuthenticationDataEntity;
+import com.earthone.earthone.entity.AuthenticationDataEntity;
 import com.earthone.earthone.entity.UserEntity;
 import com.earthone.earthone.mapper.UserMapper;
 import com.earthone.earthone.security.CustomPrincipal;
 import com.earthone.earthone.security.SecurityService;
-//import com.earthone.earthone.service.AuthenticationService;
+import com.earthone.earthone.service.AuthenticationService;
 import com.earthone.earthone.service.UserService;
 
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -29,7 +29,7 @@ public class AuthRestControllerV1 {
 
     private final SecurityService securityService;
     private final UserService userService;
-    //private final AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
     private final UserMapper userMapper;
 
 
@@ -40,21 +40,20 @@ public class AuthRestControllerV1 {
                 .map(userMapper::map);
     }
 
-    // @PostMapping("/processeXToken")
-    // public Mono<AuthResponseDto> processedXToken(String xToken, ServerHttpRequest request) {
-    //     return authenticationService.xTokenCheck(AuthenticationDataEntity.builder()
-    //                 .authEntity(xToken)
-    //                 .build(), request);
-    // }
+    @PostMapping("/processeXToken")
+    public Mono<AuthResponseDto> processedXToken(@RequestBody AuthRequestDto authRequestDto, ServerHttpRequest request) {
+        return authenticationService.xTokenCheck(AuthenticationDataEntity.builder().authEntity(authRequestDto.getX_token()).build(), request);
+    }
 
+    
     @PostMapping("/login")
     public Mono<AuthResponseDto> login(@RequestBody AuthRequestDto dto, ServerHttpRequest request) {
-        
         return securityService.authenticate(dto.getUsername(), dto.getPassword(), request)
                 .flatMap(tokenDetails -> Mono.just(
                         AuthResponseDto.builder()
                                 .userId(tokenDetails.getUserId())
                                 .token(tokenDetails.getToken())
+                                .xToken(tokenDetails.getXToken())
                                 .issuedAt(tokenDetails.getIssuedAt())
                                 .expiresAt(tokenDetails.getExpiresAt())
                                 .build()
