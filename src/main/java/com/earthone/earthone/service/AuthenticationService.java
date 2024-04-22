@@ -8,9 +8,6 @@ import io.jsonwebtoken.Jwts;
 
 import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 import com.earthone.earthone.dto.AuthResponseDto;
 import com.earthone.earthone.entity.AuthenticationDataEntity;
