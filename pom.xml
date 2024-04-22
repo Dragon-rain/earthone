@@ -127,6 +127,7 @@
                 </configuration>
             </plugin>
 		</plugins>
+		<finalName>earthone</finalName>
 	</build>
 
 </project>
