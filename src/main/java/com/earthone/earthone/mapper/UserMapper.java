@@ -1,5 +1,6 @@
 package com.earthone.earthone.mapper;
 
+
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 
