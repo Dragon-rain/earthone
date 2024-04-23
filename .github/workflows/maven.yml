@@ -45,5 +45,5 @@ jobs:
       with:
         context: .
         push: true
-        tags: dragonrain/earthone_showcase:latest
+        tags: dragonrain/earthone_showcase:${{ github.run_number }}
         
