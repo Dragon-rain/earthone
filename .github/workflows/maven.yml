@@ -18,6 +18,11 @@ jobs:
   build:
     permissions: write-all
     runs-on: ubuntu-latest
+    env:
+      DB_HOST: ${{ vars.DB_HOST }}
+      DB_NAME: ${{ vars.DB_NAME }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
     - uses: actions/checkout@v3
@@ -28,7 +33,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn clean install -Dspring-boot.run.arguments=--spring.r2dbc.url=r2dbc:postgres://${{ vars.DB_HOST }}/${{ vars.DB_NAME }}?sslmode=require,--spring.r2dbc.username=${{ secrets.DB_USERNAME }},--spring.r2dbc.password=${{ secrets.DB_PASSWORD }},--spring.flyway.url=jdbc:postgresql:${{ vars.DB_HOST }}/${{ vars.DB_NAME }}
+      run: mvn clean install
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
