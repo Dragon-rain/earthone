@@ -25,6 +25,8 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
+    - name: test env varables
+      run: echo ${{env.DB_HOST}} , ${{env.DB_NAME}} , ${{env.DB_PASSWORD}}, ${{env.DB_USERNAME}}
     - uses: actions/checkout@v3
     - name: Set up JDK 22
       uses: actions/setup-java@v3
