@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+data: 
+  host: earthonetest.ceobakkmm4tq.ap-northeast-2.rds.amazonaws.com:5432
+  dbName: postgres
