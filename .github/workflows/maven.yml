@@ -35,12 +35,8 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run:  | 
-        -Dspring-boot.run.arguments=--spring.r2dbc.url='r2dbc:postgres://${{ env.DB_HOST }}/${{ env.DB_NAME }}?sslmode=require'
-        -Dspring-boot.run.arguments=--spring.r2dbc.username=${{ env.DB_USERNAME }}
-        -Dspring-boot.run.arguments=--spring.r2dbc.password=${{ env.DB_PASSWORD }}
-        -Dspring-boot.run.arguments=--spring.flyway.url='jdbc:postgresql:${{ env.DB_HOST }}/${{ env.DB_NAME }}'
-        mvn clean install 
+      run: mvn clean install -Dspring.r2dbc.url='r2dbc:postgres://${{ env.DB_HOST }}/${{ env.DB_NAME }}?sslmode=require' -Dspring.r2dbc.username=${{ env.DB_USERNAME }} -Dspring.r2dbc.password=${{ env.DB_PASSWORD }} -Dspring.flyway.url='jdbc:postgresql:${{ env.DB_HOST }}/${{ env.DB_NAME }}'
+         
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
