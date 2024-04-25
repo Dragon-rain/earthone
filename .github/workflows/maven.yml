@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DB_HOST: ${{ vars.DB_HOST }}
-      DB_NAME: ${{ vars.DB_NAME }}
+      DB_FLYWAY: ${{ vars.DB_FLYWAY }}
       DB_USERNAME: ${{ secrets.DB_USERNAME }}
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
@@ -35,7 +35,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn clean install -Dspring.r2dbc.url='r2dbc:postgres://${{ env.DB_HOST }}/${{ env.DB_NAME }}?sslmode=require' -Dspring.r2dbc.username=${{ env.DB_USERNAME }} -Dspring.r2dbc.password=${{ env.DB_PASSWORD }} -Dspring.flyway.url='jdbc:postgresql:${{ env.DB_HOST }}/${{ env.DB_NAME }}'
+      run: mvn clean install -Dspring.r2dbc.url=${{ env.DB_HOST }} -Dspring.r2dbc.username=${{ env.DB_USERNAME }} -Dspring.r2dbc.password=${{ env.DB_PASSWORD }} -Dspring.flyway.url=${{ env.DB_FLYWAY }}
          
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
