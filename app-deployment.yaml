@@ -1,22 +1,23 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: Deployment # Kubernetes resource kind we are creating
 metadata:
-  name: erthone-showcase
+  name: erthone-showcase # name of deployment or service
 spec:
   selector:
     matchLabels:
-      app: erthone-showcase
-  replicas: 3
+      app: erthone-showcase # to group multipple pods inside a single srvice. should be same in deployment and srvice files
+  replicas: 3 # Number of replicas that will be created for this deployment
   template:
     metadata:
       labels:
-        app: erthone-showcase
+        app: erthone-showcase # app name shod be same with "matchLabels" name
     spec:
       containers:
-        - name: earthone-showcase
-          image: earthone-showcase:0.1
+        - name: earthone-showcase # name of contaner to be created
+          image: earthone-showcase:0.1 # Image that will be used to create container in the cluster
+          imagePullPolicy: IfNotPresent # will search image frol local if not present it will serch from docker hub
           ports:
-            - containerPort: 8080
+            - containerPort: 8080 # The port that the container is running on in the cluster
           env:   # Setting Enviornmental Variables
             - name: DB_HOST   # Setting Database host address from configMap
               valueFrom :
